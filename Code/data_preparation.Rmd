@@ -1,0 +1,46 @@
+---
+title: "Data Preparation"
+author: "Qianhui Yu"
+date: "12/11/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Data Preparation
+
+```{r Data Preparation}
+# load the original data
+math = read.csv2(file = "../data/student-mat.csv", header = TRUE)
+por = read.csv2(file = "../data/student-por.csv", header = TRUE)
+
+
+# generate labels for Binary Classification: pass/fail
+pass_math = cut(math$G3, c(-1, 9, 20), c("fail", "pass"))
+pass_por = cut(por$G3, c(-1, 9, 20), c("fail", "pass"))
+
+# generate labels for five-level system of Ireland standard grades
+five_math = cut(math$G3, c(-1, 9, 11, 13, 15, 20), c("F", "D", "C", "B", "A"))
+five_por = cut(por$G3, c(-1, 9, 11, 13, 15, 20), c("F", "D", "C", "B", "A"))
+
+# create pdf for grades distribution
+pdf("../Report/math-grades-histograms.pdf")
+par(mfrow = c(1, 3))
+plot(pass_math, main = "Binary(pass/fail)")
+plot(five_math, main = "Five-level")
+hist(math$G3, col = "gray", main = "G3 numeric", xlab = "")
+dev.off()
+pdf("../Report/por-grades-histograms.pdf")
+par(mfrow = c(1, 3))
+plot(pass_por, main = "Binary(pass/fail)")
+plot(five_por, main = "Five-level")
+hist(por$G3, col = "gray", main = "G3 numeric", xlab = "")
+dev.off()
+
+# generate the full dataset with above labels
+math_full = cbind(math, pass_math, five_math)
+write.csv2(math_full, "../data/math-full.csv", row.names = FALSE, col.names = TRUE)
+por_full = cbind(por, pass_por, five_por)
+write.csv2(por_full, "../data/por-full.csv", row.names = FALSE, col.names = TRUE)
+```
