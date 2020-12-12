@@ -18,10 +18,16 @@ por = read.csv2(file = "../data/student-por.csv", header = TRUE)
 
 # generate labels for Binary Classification: pass/fail
 pass_math = cut(math$G3, c(-1, 9, 20), c("fail", "pass"))
+pass_math_G2 = cut(math$G2, c(-1, 9, 20), c("fail", "pass"))
+pass_math_G1 = cut(math$G1, c(-1, 9, 20), c("fail", "pass"))
 pass_por = cut(por$G3, c(-1, 9, 20), c("fail", "pass"))
+
+
 
 # generate labels for five-level system of Ireland standard grades
 five_math = cut(math$G3, c(-1, 9, 11, 13, 15, 20), c("F", "D", "C", "B", "A"))
+five_math_G2 = cut(math$G2, c(-1, 9, 11, 13, 15, 20), c("F", "D", "C", "B", "A"))
+five_math_G1 = cut(math$G1, c(-1, 9, 11, 13, 15, 20), c("F", "D", "C", "B", "A"))
 five_por = cut(por$G3, c(-1, 9, 11, 13, 15, 20), c("F", "D", "C", "B", "A"))
 
 # create pdf for grades distribution

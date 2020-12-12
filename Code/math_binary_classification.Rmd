@@ -1,0 +1,98 @@
+---
+title: "binary_classification"
+author: "Qianhui Yu"
+date: "12/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Binary Classification for Math
+
+```{r binary classification for Math}
+# load data
+math_full = read.csv2(file = "../data/math-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_math_bin = subset(math_full, select = -c(school, G3, five_math)) 
+b_math_bin = subset(math_full, select = -c(school, G2, G3, five_math)) 
+c_math_bin = subset(math_full, select = -c(school, G1, G2, G3, five_math)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+# Method 1: Decision Tree
+# execute 20 runs of a DT classification for 3 inputs
+DT_amb = mining(pass_math~., a_math_bin, model="dt", Runs=20, method=K)
+DT_bmb = mining(pass_math~., b_math_bin, model="dt", Runs=20, method=K)
+DT_cmb = mining(pass_math~., c_math_bin, model="dt", Runs=20, method=K)
+
+# Can we plot the desicion tree from DT?
+# plot(DT_amb@object[1])
+
+# Method 2: Random Forest
+RF_amb = mining(pass_math~., a_math_bin, model="randomForest", Runs=20, method=K)
+RF_bmb = mining(pass_math~., b_math_bin, model="randomForest", Runs=20, method=K)
+RF_cmb = mining(pass_math~., c_math_bin, model="randomForest", Runs=20, method=K)
+
+# Method 3: NN(mlpe: multilayer perceptron ensemble)
+NN_amb = mining(pass_math~., a_math_bin, model = "mlpe", Runs=20, method=K)
+NN_bmb = mining(pass_math~., b_math_bin, model = "mlpe", Runs=20, method=K)
+NN_cmb = mining(pass_math~., c_math_bin, model = "mlpe", Runs=20, method=K)
+
+# Method 4: SVM
+SVM_amb = mining(pass_math~., a_math_bin, model = "svm", Runs=20, method=K)
+SVM_bmb = mining(pass_math~., a_math_bin, model = "svm", Runs=20, method=K)
+SVM_cmb = mining(pass_math~., a_math_bin, model = "svm", Runs=20, method=K)
+
+# Method 5: NV: Naive Predictor(baseline)
+
+# Method 6: LR (not for binary classification)
+# LR_amb = mining(G3~., math, model = "lm", Runs=20, method=K)
+# print(mean(LR_amb$error) / nrow(math))
+
+# plot figure
+# plot(LR_amb[["object"]][["cv.fit"]])
+
+
+```
+## Print PCC results
+```{r print accuracy results}
+SVM_amb = mining(pass_math~., a_math_bin, model = "svm", Runs=20, method=K)
+SVM_bmb = mining(pass_math~., b_math_bin, model = "svm", Runs=20, method=K)
+SVM_cmb = mining(pass_math~., c_math_bin, model = "svm", Runs=20, method=K)
+
+print(mean(DT_amb$error))
+print(mean(DT_bmb$error))
+print(mean(DT_cmb$error))
+print(mean(RF_amb$error))
+print(mean(RF_bmb$error))
+print(mean(RF_cmb$error))
+print(mean(NN_amb$error))
+print(mean(NN_bmb$error))
+print(mean(NN_cmb$error))
+print(mean(SVM_amb$error))
+print(mean(SVM_bmb$error))
+print(mean(SVM_cmb$error))                      
+
+```
+
+
+## Save Models
+```{r save models}
+model_dir = "../Models"
+# save all models
+savemodel(DT_amb, paste(model_dir, "/dt_amb.model", sep = ""))
+savemodel(DT_bmb, paste(model_dir, "/dt_bmb.model", sep = ""))
+savemodel(DT_cmb, paste(model_dir, "/dt_cmb.model", sep = ""))
+savemodel(RF_amb, paste(model_dir, "/rf_amb.model", sep = ""))
+savemodel(RF_bmb, paste(model_dir, "/rf_bmb.model", sep = ""))
+savemodel(RF_cmb, paste(model_dir, "/rf_cmb.model", sep = ""))
+savemodel(NN_amb, paste(model_dir, "/nn_amb.model", sep = ""))
+savemodel(NN_bmb, paste(model_dir, "/nn_bmb.model", sep = ""))
+savemodel(NN_cmb, paste(model_dir, "/nn_cmb.model", sep = ""))
+savemodel(SVM_amb, paste(model_dir, "/svm_amb.model", sep = ""))
+savemodel(SVM_bmb, paste(model_dir, "/svm_bmb.model", sep = ""))
+savemodel(SVM_cmb, paste(model_dir, "/svm_cmb.model", sep = ""))
+```
