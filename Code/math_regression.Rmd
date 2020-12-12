@@ -1,0 +1,95 @@
+---
+title: "math_regression"
+author: "Qianhui Yu"
+date: "12/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Regression for Math
+
+```{r regression for Math}
+# load data
+math_full = read.csv2(file = "../data/math-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_math_reg = subset(math_full, select = -c(school, five_math, pass_math)) 
+b_math_reg = subset(math_full, select = -c(school, G2, five_math, pass_math)) 
+c_math_reg = subset(math_full, select = -c(school, G1, G2, five_math, pass_math)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+# Method 1: Decision Tree
+# execute 20 runs of a DT classification for 3 inputs
+DT_amr = mining(G3~., a_math_reg, model="dt", Runs=20, method=K)
+DT_bmr = mining(G3~., b_math_reg, model="dt", Runs=20, method=K)
+DT_cmr = mining(G3~., c_math_reg, model="dt", Runs=20, method=K)
+
+# Can we plot the desicion tree from DT?
+# plot(DT_amr@object[1])
+
+# Method 2: Random Forest
+RF_amr = mining(G3~., a_math_reg, model="randomForest", Runs=20, method=K)
+RF_bmr = mining(G3~., b_math_reg, model="randomForest", Runs=20, method=K)
+RF_cmr = mining(G3~., c_math_reg, model="randomForest", Runs=20, method=K)
+
+# Method 3: NN(mlpe: multilayer perceptron ensemble)
+NN_amr = mining(G3~., a_math_reg, model = "mlpe", Runs=20, method=K)
+NN_bmr = mining(G3~., b_math_reg, model = "mlpe", Runs=20, method=K)
+NN_cmr = mining(G3~., c_math_reg, model = "mlpe", Runs=20, method=K)
+
+# Method 4: SVM
+SVM_amr = mining(G3~., a_math_reg, model = "svm", Runs=20, method=K)
+SVM_bmr = mining(G3~., b_math_reg, model = "svm", Runs=20, method=K)
+SVM_cmr = mining(G3~., c_math_reg, model = "svm", Runs=20, method=K)
+
+# Method 5: NV: Naive Predictor(baseline)
+
+# Method 6: LR (not for binary classification)
+# LR_amr = mining(G3~., math, model = "lm", Runs=20, method=K)
+# print(mean(LR_amr$error) / nrow(math))
+
+# plot figure
+# plot(LR_amr[["object"]][["cv.fit"]])
+
+
+```
+## Print PCC results
+```{r print accuracy results}
+row = nrow(math_full)
+print(mean(DT_amr$error) / row)
+print(mean(DT_bmr$error) / row)
+print(mean(DT_cmr$error) / row)
+print(mean(RF_amr$error) / row)
+print(mean(RF_bmr$error) / row)
+print(mean(RF_cmr$error) / row)
+print(mean(NN_amr$error) / row)
+print(mean(NN_bmr$error) / row)
+print(mean(NN_cmr$error) / row)
+print(mean(SVM_amr$error) / row)
+print(mean(SVM_bmr$error) / row)
+print(mean(SVM_cmr$error) / row)                      
+
+```
+
+
+## Save Models
+```{r save models}
+model_dir = "../Models"
+# save all models
+savemodel(DT_amr, paste(model_dir, "/dt_amr.model", sep = ""))
+savemodel(DT_bmr, paste(model_dir, "/dt_bmr.model", sep = ""))
+savemodel(DT_cmr, paste(model_dir, "/dt_cmr.model", sep = ""))
+savemodel(RF_amr, paste(model_dir, "/rf_amr.model", sep = ""))
+savemodel(RF_bmr, paste(model_dir, "/rf_bmr.model", sep = ""))
+savemodel(RF_cmr, paste(model_dir, "/rf_cmr.model", sep = ""))
+savemodel(NN_amr, paste(model_dir, "/nn_amr.model", sep = ""))
+savemodel(NN_bmr, paste(model_dir, "/nn_bmr.model", sep = ""))
+savemodel(NN_cmr, paste(model_dir, "/nn_cmr.model", sep = ""))
+savemodel(SVM_amr, paste(model_dir, "/svm_amr.model", sep = ""))
+savemodel(SVM_bmr, paste(model_dir, "/svm_bmr.model", sep = ""))
+savemodel(SVM_cmr, paste(model_dir, "/svm_cmr.model", sep = ""))
+```

@@ -59,10 +59,6 @@ SVM_cmb = mining(pass_math~., a_math_bin, model = "svm", Runs=20, method=K)
 ```
 ## Print PCC results
 ```{r print accuracy results}
-SVM_amb = mining(pass_math~., a_math_bin, model = "svm", Runs=20, method=K)
-SVM_bmb = mining(pass_math~., b_math_bin, model = "svm", Runs=20, method=K)
-SVM_cmb = mining(pass_math~., c_math_bin, model = "svm", Runs=20, method=K)
-
 print(mean(DT_amb$error))
 print(mean(DT_bmb$error))
 print(mean(DT_cmb$error))

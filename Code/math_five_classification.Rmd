@@ -1,0 +1,92 @@
+---
+title: "five_level_classification"
+author: "Qianhui Yu"
+date: "12/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Five-level Classification for Math
+
+```{r five-level classification for Math}
+# load data
+math_full = read.csv2(file = "../data/math-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_math_five = subset(math_full, select = -c(school, G3, pass_math)) 
+b_math_five = subset(math_full, select = -c(school, G2, G3, pass_math)) 
+c_math_five = subset(math_full, select = -c(school, G1, G2, G3, pass_math)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+# Method 1: Decision Tree
+# execute 20 runs of a DT classification for 3 inputs
+DT_amf = mining(five_math~., a_math_five, model="dt", Runs=20, method=K)
+DT_bmf = mining(five_math~., b_math_five, model="dt", Runs=20, method=K)
+DT_cmf = mining(five_math~., c_math_five, model="dt", Runs=20, method=K)
+
+# Can we plot the desicion tree from DT?
+# plot(DT_amf@object[1])
+
+# Method 2: Random Forest
+RF_amf = mining(five_math~., a_math_five, model="randomForest", Runs=20, method=K)
+RF_bmf = mining(five_math~., b_math_five, model="randomForest", Runs=20, method=K)
+RF_cmf = mining(five_math~., c_math_five, model="randomForest", Runs=20, method=K)
+
+# Method 3: NN(mlpe: multilayer perceptron ensemble)
+NN_amf = mining(five_math~., a_math_five, model = "mlpe", Runs=20, method=K)
+NN_bmf = mining(five_math~., b_math_five, model = "mlpe", Runs=20, method=K)
+NN_cmf = mining(five_math~., c_math_five, model = "mlpe", Runs=20, method=K)
+
+# Method 4: SVM
+SVM_amf = mining(five_math~., a_math_five, model = "svm", Runs=20, method=K)
+SVM_bmf = mining(five_math~., b_math_five, model = "svm", Runs=20, method=K)
+SVM_cmf = mining(five_math~., c_math_five, model = "svm", Runs=20, method=K)
+
+# Method 5: NV: Naive Predictor(baseline)
+
+# Method 6: LR (not for binary classification)
+# LR_amf = mining(G3~., math, model = "lm", Runs=20, method=K)
+# print(mean(LR_amf$error) / nrow(math))
+
+# plot figure
+# plot(LR_amf[["object"]][["cv.fit"]])
+
+
+```
+## Print PCC results
+```{r print accuracy results}
+print(mean(DT_amf$error))
+print(mean(DT_bmf$error))
+print(mean(DT_cmf$error))
+print(mean(RF_amf$error))
+print(mean(RF_bmf$error))
+print(mean(RF_cmf$error))
+print(mean(NN_amf$error))
+print(mean(NN_bmf$error))
+print(mean(NN_cmf$error))
+print(mean(SVM_amf$error))
+print(mean(SVM_bmf$error))
+print(mean(SVM_cmf$error))                      
+
+```
+## Save Models
+```{r save models}
+model_dir = "../Models"
+# save all models
+savemodel(DT_amf, paste(model_dir, "/dt_amf.model", sep = ""))
+savemodel(DT_bmf, paste(model_dir, "/dt_bmf.model", sep = ""))
+savemodel(DT_cmf, paste(model_dir, "/dt_cmf.model", sep = ""))
+savemodel(RF_amf, paste(model_dir, "/rf_amf.model", sep = ""))
+savemodel(RF_bmf, paste(model_dir, "/rf_bmf.model", sep = ""))
+savemodel(RF_cmf, paste(model_dir, "/rf_cmf.model", sep = ""))
+savemodel(NN_amf, paste(model_dir, "/nn_amf.model", sep = ""))
+savemodel(NN_bmf, paste(model_dir, "/nn_bmf.model", sep = ""))
+savemodel(NN_cmf, paste(model_dir, "/nn_cmf.model", sep = ""))
+savemodel(SVM_amf, paste(model_dir, "/svm_amf.model", sep = ""))
+savemodel(SVM_bmf, paste(model_dir, "/svm_bmf.model", sep = ""))
+savemodel(SVM_cmf, paste(model_dir, "/svm_cmf.model", sep = ""))
+```
