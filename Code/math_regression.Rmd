@@ -57,8 +57,8 @@ SVM_cmr = mining(G3~., c_math_reg, model = "svm", Runs=20, method=K)
 
 
 ```
-## Print PCC results
-```{r print accuracy results}
+## Print RMSE results
+```{r print RMSE results}
 row = nrow(math_full)
 print(mean(DT_amr$error) / row)
 print(mean(DT_bmr$error) / row)
@@ -78,7 +78,7 @@ print(mean(SVM_cmr$error) / row)
 
 ## Save Models
 ```{r save models}
-model_dir = "../Models"
+model_dir = "../Models/Math/Regression"
 # save all models
 savemodel(DT_amr, paste(model_dir, "/dt_amr.model", sep = ""))
 savemodel(DT_bmr, paste(model_dir, "/dt_bmr.model", sep = ""))

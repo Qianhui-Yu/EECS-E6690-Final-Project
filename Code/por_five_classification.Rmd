@@ -1,0 +1,94 @@
+---
+title: "Portuguese_five_level_classification"
+author: "Qianhui Yu"
+date: "12/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Five-level Classification for Portuguese
+
+```{r five-level classification for Portuguese}
+# load data
+por_full = read.csv2(file = "../data/por-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_por_five = subset(por_full, select = -c(school, G3, pass_por)) 
+b_por_five = subset(por_full, select = -c(school, G2, G3, pass_por)) 
+c_por_five = subset(por_full, select = -c(school, G1, G2, G3, pass_por)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+# Method 1: Decision Tree
+# execute 20 runs of a DT classification for 3 inputs
+DT_apf = mining(five_por~., a_por_five, model="dt", Runs=20, method=K)
+DT_bpf = mining(five_por~., b_por_five, model="dt", Runs=20, method=K)
+DT_cpf = mining(five_por~., c_por_five, model="dt", Runs=20, method=K)
+
+# Can we plot the desicion tree from DT?
+# plot(DT_apf@object[1])
+
+# Method 2: Random Forest
+RF_apf = mining(five_por~., a_por_five, model="randomForest", Runs=20, method=K)
+RF_bpf = mining(five_por~., b_por_five, model="randomForest", Runs=20, method=K)
+RF_cpf = mining(five_por~., c_por_five, model="randomForest", Runs=20, method=K)
+
+# Method 3: NN(mlpe: multilayer perceptron ensemble)
+NN_apf = mining(five_por~., a_por_five, model = "mlpe", Runs=20, method=K)
+NN_bpf = mining(five_por~., b_por_five, model = "mlpe", Runs=20, method=K)
+NN_cpf = mining(five_por~., c_por_five, model = "mlpe", Runs=20, method=K)
+
+# Method 4: SVM
+SVM_apf = mining(five_por~., a_por_five, model = "svm", Runs=20, method=K)
+SVM_bpf = mining(five_por~., b_por_five, model = "svm", Runs=20, method=K)
+SVM_cpf = mining(five_por~., c_por_five, model = "svm", Runs=20, method=K)
+
+# Method 5: NV: Naive Predictor(baseline)
+
+# Method 6: LR (not for binary classification)
+# LR_apf = mining(G3~., math, model = "lm", Runs=20, method=K)
+# print(mean(LR_apf$error) / nrow(math))
+
+# plot figure
+# plot(LR_apf[["object"]][["cv.fit"]])
+
+
+```
+## Print PCC results
+```{r print accuracy results}
+print(mean(DT_apf$error))
+print(mean(DT_bpf$error))
+print(mean(DT_cpf$error))
+print(mean(RF_apf$error))
+print(mean(RF_bpf$error))
+print(mean(RF_cpf$error))
+print(mean(NN_apf$error))
+print(mean(NN_bpf$error))
+print(mean(NN_cpf$error))
+print(mean(SVM_apf$error))
+print(mean(SVM_bpf$error))
+print(mean(SVM_cpf$error))                      
+
+```
+
+
+## Save Models
+```{r save models}
+model_dir = "../Models/Portuguese/Five"
+# save all models
+savemodel(DT_apf, paste(model_dir, "/dt_apf.model", sep = ""))
+savemodel(DT_bpf, paste(model_dir, "/dt_bpf.model", sep = ""))
+savemodel(DT_cpf, paste(model_dir, "/dt_cpf.model", sep = ""))
+savemodel(RF_apf, paste(model_dir, "/rf_apf.model", sep = ""))
+savemodel(RF_bpf, paste(model_dir, "/rf_bpf.model", sep = ""))
+savemodel(RF_cpf, paste(model_dir, "/rf_cpf.model", sep = ""))
+savemodel(NN_apf, paste(model_dir, "/nn_apf.model", sep = ""))
+savemodel(NN_bpf, paste(model_dir, "/nn_bpf.model", sep = ""))
+savemodel(NN_cpf, paste(model_dir, "/nn_cpf.model", sep = ""))
+savemodel(SVM_apf, paste(model_dir, "/svm_apf.model", sep = ""))
+savemodel(SVM_bpf, paste(model_dir, "/svm_bpf.model", sep = ""))
+savemodel(SVM_cpf, paste(model_dir, "/svm_cpf.model", sep = ""))
+```

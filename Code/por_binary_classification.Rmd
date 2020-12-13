@@ -1,0 +1,93 @@
+---
+title: "Portuguese_binary_classification"
+author: "Qianhui Yu"
+date: "12/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Binary Classification for Portuguese
+
+```{r binary classification for Portuguese}
+# load data
+por_full = read.csv2(file = "../data/por-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_por_bin = subset(por_full, select = -c(school, G3, five_por)) 
+b_por_bin = subset(por_full, select = -c(school, G2, G3, five_por)) 
+c_por_bin = subset(por_full, select = -c(school, G1, G2, G3, five_por)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+# Method 1: Decision Tree
+# execute 20 runs of a DT classification for 3 inputs
+DT_apb = mining(pass_por~., a_por_bin, model="dt", Runs=20, method=K)
+DT_bpb = mining(pass_por~., b_por_bin, model="dt", Runs=20, method=K)
+DT_cpb = mining(pass_por~., c_por_bin, model="dt", Runs=20, method=K)
+
+# Can we plot the desicion tree from DT?
+# plot(DT_apb@object[1])
+
+# Method 2: Random Forest
+RF_apb = mining(pass_por~., a_por_bin, model="randomForest", Runs=20, method=K)
+RF_bpb = mining(pass_por~., b_por_bin, model="randomForest", Runs=20, method=K)
+RF_cpb = mining(pass_por~., c_por_bin, model="randomForest", Runs=20, method=K)
+
+# Method 3: NN(mlpe: multilayer perceptron ensemble)
+NN_apb = mining(pass_por~., a_por_bin, model = "mlpe", Runs=20, method=K)
+NN_bpb = mining(pass_por~., b_por_bin, model = "mlpe", Runs=20, method=K)
+NN_cpb = mining(pass_por~., c_por_bin, model = "mlpe", Runs=20, method=K)
+
+# Method 4: SVM
+SVM_apb = mining(pass_por~., a_por_bin, model = "svm", Runs=20, method=K)
+SVM_bpb = mining(pass_por~., b_por_bin, model = "svm", Runs=20, method=K)
+SVM_cpb = mining(pass_por~., c_por_bin, model = "svm", Runs=20, method=K)
+
+# Method 5: NV: Naive Predictor(baseline)
+
+# Method 6: LR (not for binary classification)
+# LR_apb = mining(G3~., math, model = "lm", Runs=20, method=K)
+# print(mean(LR_apb$error) / nrow(math))
+
+# plot figure
+# plot(LR_apb[["object"]][["cv.fit"]])
+
+
+```
+## Print PCC results
+```{r print accuracy results}
+print(mean(DT_apb$error))
+print(mean(DT_bpb$error))
+print(mean(DT_cpb$error))
+print(mean(RF_apb$error))
+print(mean(RF_bpb$error))
+print(mean(RF_cpb$error))
+print(mean(NN_apb$error))
+print(mean(NN_bpb$error))
+print(mean(NN_cpb$error))
+print(mean(SVM_apb$error))
+print(mean(SVM_bpb$error))
+print(mean(SVM_cpb$error))                      
+
+```
+
+
+## Save Models
+```{r save models}
+model_dir = "../Models/Portuguese/Binary"
+# save all models
+savemodel(DT_apb, paste(model_dir, "/dt_apb.model", sep = ""))
+savemodel(DT_bpb, paste(model_dir, "/dt_bpb.model", sep = ""))
+savemodel(DT_cpb, paste(model_dir, "/dt_cpb.model", sep = ""))
+savemodel(RF_apb, paste(model_dir, "/rf_apb.model", sep = ""))
+savemodel(RF_bpb, paste(model_dir, "/rf_bpb.model", sep = ""))
+savemodel(RF_cpb, paste(model_dir, "/rf_cpb.model", sep = ""))
+savemodel(NN_apb, paste(model_dir, "/nn_apb.model", sep = ""))
+savemodel(NN_bpb, paste(model_dir, "/nn_bpb.model", sep = ""))
+savemodel(NN_cpb, paste(model_dir, "/nn_cpb.model", sep = ""))
+savemodel(SVM_apb, paste(model_dir, "/svm_apb.model", sep = ""))
+savemodel(SVM_bpb, paste(model_dir, "/svm_bpb.model", sep = ""))
+savemodel(SVM_cpb, paste(model_dir, "/svm_cpb.model", sep = ""))
+```

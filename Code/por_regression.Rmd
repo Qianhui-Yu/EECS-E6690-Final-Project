@@ -1,0 +1,95 @@
+---
+title: "Portuguese regression classification"
+author: "Qianhui Yu"
+date: "12/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Regression for Portuguese
+
+```{r regression for Portuguese}
+# load data
+por_full = read.csv2(file = "../data/por-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_por_reg = subset(por_full, select = -c(school, five_por, pass_por)) 
+b_por_reg = subset(por_full, select = -c(school, G2, five_por, pass_por)) 
+c_por_reg = subset(por_full, select = -c(school, G1, G2, five_por, pass_por)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+# Method 1: Decision Tree
+# execute 20 runs of a DT classification for 3 inputs
+DT_apr = mining(G3~., a_por_reg, model="dt", Runs=20, method=K)
+DT_bpr = mining(G3~., b_por_reg, model="dt", Runs=20, method=K)
+DT_cpr = mining(G3~., c_por_reg, model="dt", Runs=20, method=K)
+
+# Can we plot the desicion tree from DT?
+# plot(DT_apr@object[1])
+
+# Method 2: Random Forest
+RF_apr = mining(G3~., a_por_reg, model="randomForest", Runs=20, method=K)
+RF_bpr = mining(G3~., b_por_reg, model="randomForest", Runs=20, method=K)
+RF_cpr = mining(G3~., c_por_reg, model="randomForest", Runs=20, method=K)
+
+# Method 3: NN(mlpe: multilayer perceptron ensemble)
+NN_apr = mining(G3~., a_por_reg, model = "mlpe", Runs=20, method=K)
+NN_bpr = mining(G3~., b_por_reg, model = "mlpe", Runs=20, method=K)
+NN_cpr = mining(G3~., c_por_reg, model = "mlpe", Runs=20, method=K)
+
+# Method 4: SVM
+SVM_apr = mining(G3~., a_por_reg, model = "svm", Runs=20, method=K)
+SVM_bpr = mining(G3~., b_por_reg, model = "svm", Runs=20, method=K)
+SVM_cpr = mining(G3~., c_por_reg, model = "svm", Runs=20, method=K)
+
+# Method 5: NV: Naive Predictor(baseline)
+
+# Method 6: LR (not for binary classification)
+# LR_apr = mining(G3~., math, model = "lm", Runs=20, method=K)
+# print(mean(LR_apr$error) / nrow(math))
+
+# plot figure
+# plot(LR_apr[["object"]][["cv.fit"]])
+
+
+```
+## Print RMSE results
+```{r print RMSE results}
+row = nrow(por_full)
+print(mean(DT_apr$error) / row)
+print(mean(DT_bpr$error) / row)
+print(mean(DT_cpr$error) / row)
+print(mean(RF_apr$error) / row)
+print(mean(RF_bpr$error) / row)
+print(mean(RF_cpr$error) / row)
+print(mean(NN_apr$error) / row)
+print(mean(NN_bpr$error) / row)
+print(mean(NN_cpr$error) / row)
+print(mean(SVM_apr$error) / row)
+print(mean(SVM_bpr$error) / row)
+print(mean(SVM_cpr$error) / row)                      
+
+```
+
+
+## Save Models
+```{r save models}
+model_dir = "../Models/Portuguese/Regression"
+# save all models
+savemodel(DT_apr, paste(model_dir, "/dt_apr.model", sep = ""))
+savemodel(DT_bpr, paste(model_dir, "/dt_bpr.model", sep = ""))
+savemodel(DT_cpr, paste(model_dir, "/dt_cpr.model", sep = ""))
+savemodel(RF_apr, paste(model_dir, "/rf_apr.model", sep = ""))
+savemodel(RF_bpr, paste(model_dir, "/rf_bpr.model", sep = ""))
+savemodel(RF_cpr, paste(model_dir, "/rf_cpr.model", sep = ""))
+savemodel(NN_apr, paste(model_dir, "/nn_apr.model", sep = ""))
+savemodel(NN_bpr, paste(model_dir, "/nn_bpr.model", sep = ""))
+savemodel(NN_cpr, paste(model_dir, "/nn_cpr.model", sep = ""))
+savemodel(SVM_apr, paste(model_dir, "/svm_apr.model", sep = ""))
+savemodel(SVM_bpr, paste(model_dir, "/svm_bpr.model", sep = ""))
+savemodel(SVM_cpr, paste(model_dir, "/svm_cpr.model", sep = ""))
+```

@@ -43,8 +43,8 @@ NN_cmb = mining(pass_math~., c_math_bin, model = "mlpe", Runs=20, method=K)
 
 # Method 4: SVM
 SVM_amb = mining(pass_math~., a_math_bin, model = "svm", Runs=20, method=K)
-SVM_bmb = mining(pass_math~., a_math_bin, model = "svm", Runs=20, method=K)
-SVM_cmb = mining(pass_math~., a_math_bin, model = "svm", Runs=20, method=K)
+SVM_bmb = mining(pass_math~., b_math_bin, model = "svm", Runs=20, method=K)
+SVM_cmb = mining(pass_math~., c_math_bin, model = "svm", Runs=20, method=K)
 
 # Method 5: NV: Naive Predictor(baseline)
 
@@ -77,7 +77,7 @@ print(mean(SVM_cmb$error))
 
 ## Save Models
 ```{r save models}
-model_dir = "../Models"
+model_dir = "../Models/Math/Binary"
 # save all models
 savemodel(DT_amb, paste(model_dir, "/dt_amb.model", sep = ""))
 savemodel(DT_bmb, paste(model_dir, "/dt_bmb.model", sep = ""))

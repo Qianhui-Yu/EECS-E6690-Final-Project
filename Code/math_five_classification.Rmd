@@ -75,7 +75,7 @@ print(mean(SVM_cmf$error))
 ```
 ## Save Models
 ```{r save models}
-model_dir = "../Models"
+model_dir = "../Models/Math/Five"
 # save all models
 savemodel(DT_amf, paste(model_dir, "/dt_amf.model", sep = ""))
 savemodel(DT_bmf, paste(model_dir, "/dt_bmf.model", sep = ""))
