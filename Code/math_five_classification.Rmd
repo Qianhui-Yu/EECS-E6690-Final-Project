@@ -55,7 +55,13 @@ SVM_cmf = mining(five_math~., c_math_five, model = "svm", Runs=20, method=K)
 # plot figure
 # plot(LR_amf[["object"]][["cv.fit"]])
 
-
+```
+## Try other methods
+```{r try other methods}
+# Other Method: XGBOOST
+XGB_amf = mining(five_math~., a_math_five, model = "xgboost", Runs=20, method=K)
+XGB_bmf = mining(five_math~., b_math_five, model = "xgboost", Runs=20, method=K)
+XGB_cmf = mining(five_math~., c_math_five, model = "xgboost", Runs=20, method=K)
 ```
 ## Print PCC results
 ```{r print accuracy results}
@@ -70,7 +76,11 @@ print(mean(NN_bmf$error))
 print(mean(NN_cmf$error))
 print(mean(SVM_amf$error))
 print(mean(SVM_bmf$error))
-print(mean(SVM_cmf$error))                      
+print(mean(SVM_cmf$error))       
+
+print(mean(XGB_amf$error))
+print(mean(XGB_bmf$error))
+print(mean(XGB_cmf$error))  
 
 ```
 ## Save Models
@@ -89,4 +99,7 @@ savemodel(NN_cmf, paste(model_dir, "/nn_cmf.model", sep = ""))
 savemodel(SVM_amf, paste(model_dir, "/svm_amf.model", sep = ""))
 savemodel(SVM_bmf, paste(model_dir, "/svm_bmf.model", sep = ""))
 savemodel(SVM_cmf, paste(model_dir, "/svm_cmf.model", sep = ""))
+savemodel(XGB_amf, paste(model_dir, "/xgb_amf.model", sep = ""))
+savemodel(XGB_bmf, paste(model_dir, "/xgb_bmf.model", sep = ""))
+savemodel(XGB_cmf, paste(model_dir, "/xgb_cmf.model", sep = ""))
 ```

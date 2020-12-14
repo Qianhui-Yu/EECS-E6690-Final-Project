@@ -57,6 +57,17 @@ SVM_cpf = mining(five_por~., c_por_five, model = "svm", Runs=20, method=K)
 
 
 ```
+## Try other methods
+```{r try other methods}
+# Other Method: XGBOOST
+XGB_apf = mining(five_por~., a_por_five, model = "xgboost", Runs=20, method=K)
+XGB_bpf = mining(five_por~., b_por_five, model = "xgboost", Runs=20, method=K)
+XGB_cpf = mining(five_por~., c_por_five, model = "xgboost", Runs=20, method=K)
+
+print(mean(XGB_apf$error))
+print(mean(XGB_bpf$error))
+print(mean(XGB_cpf$error)) 
+```
 ## Print PCC results
 ```{r print accuracy results}
 print(mean(DT_apf$error))
@@ -91,4 +102,7 @@ savemodel(NN_cpf, paste(model_dir, "/nn_cpf.model", sep = ""))
 savemodel(SVM_apf, paste(model_dir, "/svm_apf.model", sep = ""))
 savemodel(SVM_bpf, paste(model_dir, "/svm_bpf.model", sep = ""))
 savemodel(SVM_cpf, paste(model_dir, "/svm_cpf.model", sep = ""))
+savemodel(XGB_apf, paste(model_dir, "/xgb_apf.model", sep = ""))
+savemodel(XGB_bpf, paste(model_dir, "/xgb_bpf.model", sep = ""))
+savemodel(XGB_cpf, paste(model_dir, "/xgb_cpf.model", sep = ""))
 ```

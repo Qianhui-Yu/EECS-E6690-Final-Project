@@ -56,6 +56,17 @@ SVM_cpb = mining(pass_por~., c_por_bin, model = "svm", Runs=20, method=K)
 
 
 ```
+## Try other methods
+```{r try other methods}
+# Other Method: XGBOOST
+XGB_apb = mining(pass_por~., a_por_bin, model = "xgboost", Runs=20, method=K)
+XGB_bpb = mining(pass_por~., b_por_bin, model = "xgboost", Runs=20, method=K)
+XGB_cpb = mining(pass_por~., c_por_bin, model = "xgboost", Runs=20, method=K)
+
+print(mean(XGB_apb$error))
+print(mean(XGB_bpb$error))
+print(mean(XGB_cpb$error)) 
+```
 ## Print PCC results
 ```{r print accuracy results}
 print(mean(DT_apb$error))
@@ -90,4 +101,7 @@ savemodel(NN_cpb, paste(model_dir, "/nn_cpb.model", sep = ""))
 savemodel(SVM_apb, paste(model_dir, "/svm_apb.model", sep = ""))
 savemodel(SVM_bpb, paste(model_dir, "/svm_bpb.model", sep = ""))
 savemodel(SVM_cpb, paste(model_dir, "/svm_cpb.model", sep = ""))
+savemodel(XGB_apb, paste(model_dir, "/xgb_apb.model", sep = ""))
+savemodel(XGB_bpb, paste(model_dir, "/xgb_bpb.model", sep = ""))
+savemodel(XGB_cpb, paste(model_dir, "/xgb_cpb.model", sep = ""))
 ```
