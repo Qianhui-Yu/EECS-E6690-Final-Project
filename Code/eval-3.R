@@ -1,5 +1,5 @@
 library(rminer)
-math=read.table(file="math2.csv",header=TRUE) 
+#math=read.table(file="math2.csv",header=TRUE) 
 
 inputs=1:32 # all except pass and five
 g3=which(names(math)=="G3")

@@ -1,0 +1,94 @@
+---
+title: "Feature Reduction Math Binary Classification"
+author: "Qianhui Yu"
+date: "12/13/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Binary Classification for Math
+
+```{r binary classification for Math}
+# load data
+math_full = read.csv2(file = "../data/math-full.csv", header = TRUE)
+# Feature reduction and Generate 3 different inputs
+a_math_bin_reduction = subset(math_full, select = -c(school, G3, five_math, traveltime, nursery, famsup, internet, Pstatus, sex, Fedu, schoolsup, Medu, address, health, guardian, activities, paid, Walc)) 
+b_math_bin_reduction = subset(math_full, select = -c(school, G2, G3, five_math, traveltime, nursery, famsup, internet, Pstatus, sex, Fedu, schoolsup, Medu, address, health, guardian, activities, paid, Walc)) 
+c_math_bin_reduction = subset(math_full, select = -c(school, G1, G2, G3, five_math, traveltime, nursery, famsup, internet, Pstatus, sex, Fedu, schoolsup, Medu, address, health, guardian, activities, paid, Walc)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+# Method 1: Decision Tree
+# execute 20 runs of a DT classification for 3 inputs
+DT_amb_reduction = mining(pass_math~., a_math_bin_reduction, model="dt", Runs=20, method=K)
+DT_bmb_reduction = mining(pass_math~., b_math_bin_reduction, model="dt", Runs=20, method=K)
+DT_cmb_reduction = mining(pass_math~., c_math_bin_reduction, model="dt", Runs=20, method=K)
+
+# Can we plot the desicion tree from DT?
+# plot(DT_amb_reduction@object[1])
+
+# Method 2: Random Forest
+RF_amb_reduction = mining(pass_math~., a_math_bin_reduction, model="randomForest", Runs=20, method=K)
+RF_bmb_reduction = mining(pass_math~., b_math_bin_reduction, model="randomForest", Runs=20, method=K)
+RF_cmb_reduction = mining(pass_math~., c_math_bin_reduction, model="randomForest", Runs=20, method=K)
+
+# Method 3: NN(mlpe: multilayer perceptron ensemble)
+NN_amb_reduction = mining(pass_math~., a_math_bin_reduction, model = "mlpe", Runs=20, method=K)
+NN_bmb_reduction = mining(pass_math~., b_math_bin_reduction, model = "mlpe", Runs=20, method=K)
+NN_cmb_reduction = mining(pass_math~., c_math_bin_reduction, model = "mlpe", Runs=20, method=K)
+
+# Method 4: SVM
+SVM_amb_reduction = mining(pass_math~., a_math_bin_reduction, model = "svm", Runs=20, method=K)
+SVM_bmb_reduction = mining(pass_math~., b_math_bin_reduction, model = "svm", Runs=20, method=K)
+SVM_cmb_reduction = mining(pass_math~., c_math_bin_reduction, model = "svm", Runs=20, method=K)
+
+# Method 5: NV: Naive Predictor(baseline)
+
+# Method 6: LR (not for binary classification)
+# LR_amb_reduction = mining(G3~., math, model = "lm", Runs=20, method=K)
+# print(mean(LR_amb_reduction$error) / nrow(math))
+
+# plot figure
+# plot(LR_amb_reduction[["object"]][["cv.fit"]])
+
+
+```
+## Print PCC results
+```{r print accuracy results}
+print(mean(DT_amb_reduction$error))
+print(mean(DT_bmb_reduction$error))
+print(mean(DT_cmb_reduction$error))
+print(mean(RF_amb_reduction$error))
+print(mean(RF_bmb_reduction$error))
+print(mean(RF_cmb_reduction$error))
+print(mean(NN_amb_reduction$error))
+print(mean(NN_bmb_reduction$error))
+print(mean(NN_cmb_reduction$error))
+print(mean(SVM_amb_reduction$error))
+print(mean(SVM_bmb_reduction$error))
+print(mean(SVM_cmb_reduction$error))                      
+
+```
+
+
+## Save Models
+```{r save models}
+model_dir = "../Models/Math/Binary"
+# save all models
+savemodel(DT_amb_reduction, paste(model_dir, "/dt_amb_reduction.model", sep = ""))
+savemodel(DT_bmb_reduction, paste(model_dir, "/dt_bmb_reduction.model", sep = ""))
+savemodel(DT_cmb_reduction, paste(model_dir, "/dt_cmb_reduction.model", sep = ""))
+savemodel(RF_amb_reduction, paste(model_dir, "/rf_amb_reduction.model", sep = ""))
+savemodel(RF_bmb_reduction, paste(model_dir, "/rf_bmb_reduction.model", sep = ""))
+savemodel(RF_cmb_reduction, paste(model_dir, "/rf_cmb_reduction.model", sep = ""))
+savemodel(NN_amb_reduction, paste(model_dir, "/nn_amb_reduction.model", sep = ""))
+savemodel(NN_bmb_reduction, paste(model_dir, "/nn_bmb_reduction.model", sep = ""))
+savemodel(NN_cmb_reduction, paste(model_dir, "/nn_cmb_reduction.model", sep = ""))
+savemodel(SVM_amb_reduction, paste(model_dir, "/svm_amb_reduction.model", sep = ""))
+savemodel(SVM_bmb_reduction, paste(model_dir, "/svm_bmb_reduction.model", sep = ""))
+savemodel(SVM_cmb_reduction, paste(model_dir, "/svm_cmb_reduction.model", sep = ""))
+```
