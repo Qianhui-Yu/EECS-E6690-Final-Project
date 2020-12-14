@@ -1,0 +1,44 @@
+---
+title: "Portuguese regression classification"
+author: "Zihao Xiong"
+date: "12/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Regression for Portuguese
+
+```{r regression for Portuguese}
+# load data
+por_full = read.csv2(file = "../data/por-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_por_reg = subset(por_full, select = -c(school, five_por, pass_por)) 
+b_por_reg = subset(por_full, select = -c(school, G2, five_por, pass_por)) 
+c_por_reg = subset(por_full, select = -c(school, G1, G2, five_por, pass_por)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+```
+
+```{r}
+lm_apr = mining(G3~., a_por_reg, model = "lm", Runs=20, method=K)
+lm_bpr = mining(G3~., b_por_reg, model = "lm", Runs=20, method=K)
+lm_cpr = mining(G3~., c_por_reg, model = "lm", Runs=20, method=K)
+print(mean(lm_apr$error))
+print(mean(lm_bpr$error))
+print(mean(lm_cpr$error))
+```
+
+
+## Save Models
+```{r save models}
+model_dir = "../Models/Portuguese/Regression"
+# save all models
+savemodel(lm_apr, paste(model_dir, "/lm_apr.model", sep = ""))
+savemodel(lm_bpr, paste(model_dir, "/lm_bpr.model", sep = ""))
+savemodel(lm_cpr, paste(model_dir, "/lm_cpr.model", sep = ""))
+```

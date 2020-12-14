@@ -1,0 +1,80 @@
+---
+title: "binary_classification"
+author: "Zihao Xiong"
+date: "12/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Binary Classification for Math
+
+```{r binary classification for Math}
+# load data
+# math_full = read.csv2(file = "../data/math-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_math_bin = subset(math_full, select = -c(school, G3, five_math)) 
+b_math_bin = subset(math_full, select = -c(school, G2, G3, five_math)) 
+c_math_bin = subset(math_full, select = -c(school, G1, G2, G3, five_math)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+```
+
+
+```{r}
+lda_amb = mining(pass_math~., a_math_bin, model = "lda", Runs=20, method=K)
+lda_bmb = mining(pass_math~., b_math_bin, model = "lda", Runs=20, method=K)
+lda_cmb = mining(pass_math~., c_math_bin, model = "lda", Runs=20, method=K)
+print(mean(lda_amb$error))
+print(mean(lda_bmb$error))
+print(mean(lda_cmb$error))
+```
+
+```{r}
+lm_amb = mining(pass_math~., a_math_bin, model = "multinom", Runs=20, method=K)
+lm_bmb = mining(pass_math~., b_math_bin, model = "multinom", Runs=20, method=K)
+lm_cmb = mining(pass_math~., c_math_bin, model = "multinom", Runs=20, method=K)
+print(mean(lm_amb$error))
+print(mean(lm_bmb$error))
+print(mean(lm_cmb$error))
+```
+
+```{r}
+qda_amb = mining(pass_math~., a_math_bin, model = "qda", Runs=20, method=K)
+qda_bmb = mining(pass_math~., b_math_bin, model = "qda", Runs=20, method=K)
+qda_cmb = mining(pass_math~., c_math_bin, model = "qda", Runs=20, method=K)
+print(mean(qda_amb$error))
+print(mean(qda_bmb$error))
+print(mean(qda_cmb$error))
+```
+```{r}
+NB_amb = mining(pass_math~., a_math_bin, model = "naiveBayes", Runs=20, method=K)
+NB_bmb = mining(pass_math~., b_math_bin, model = "naiveBayes", Runs=20, method=K)
+NB_cmb = mining(pass_math~., c_math_bin, model = "naiveBayes", Runs=20, method=K)
+print(mean(NB_amb$error))
+print(mean(NB_bmb$error))
+print(mean(NB_cmb$error))
+```
+
+
+## Save Models
+```{r save models}
+model_dir = "../Models/Math/Binary"
+# save all models
+savemodel(lda_amb, paste(model_dir, "/lda_amb.model", sep = ""))
+savemodel(lda_bmb, paste(model_dir, "/lda_bmb.model", sep = ""))
+savemodel(lda_cmb, paste(model_dir, "/lda_cmb.model", sep = ""))
+savemodel(lm_amb, paste(model_dir, "/lm_amb.model", sep = ""))
+savemodel(lm_bmb, paste(model_dir, "/lm_bmb.model", sep = ""))
+savemodel(lm_cmb, paste(model_dir, "/lm_cmb.model", sep = ""))
+savemodel(qda_amb, paste(model_dir, "/qda_amb.model", sep = ""))
+savemodel(qda_bmb, paste(model_dir, "/qda_bmb.model", sep = ""))
+savemodel(qda_cmb, paste(model_dir, "/qda_cmb.model", sep = ""))
+savemodel(NB_amb, paste(model_dir, "/NB_amb.model", sep = ""))
+savemodel(NB_bmb, paste(model_dir, "/NB_bmb.model", sep = ""))
+savemodel(NB_cmb, paste(model_dir, "/NB_cmb.model", sep = ""))
+```

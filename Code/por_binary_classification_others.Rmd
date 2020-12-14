@@ -1,0 +1,76 @@
+---
+title: "Portuguese_binary_classification"
+author: "Zihao Xiong"
+date: "12/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Binary Classification for Portuguese
+
+```{r binary classification for Portuguese}
+# load data
+# por_full = read.csv2(file = "../data/por-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_por_bin = subset(por_full, select = -c(school, G3, five_por)) 
+b_por_bin = subset(por_full, select = -c(school, G2, G3, five_por)) 
+c_por_bin = subset(por_full, select = -c(school, G1, G2, G3, five_por)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+```
+
+```{r}
+lda_apb = mining(pass_por~., a_por_bin, model = "lda", Runs=20, method=K)
+lda_bpb = mining(pass_por~., b_por_bin, model = "lda", Runs=20, method=K)
+lda_cpb = mining(pass_por~., c_por_bin, model = "lda", Runs=20, method=K)
+print(mean(lda_apb$error))
+print(mean(lda_bpb$error))
+print(mean(lda_cpb$error))
+```
+
+```{r}
+lm_apb = mining(pass_por~., a_por_bin, model = "multinom", Runs=20, method=K)
+lm_bpb = mining(pass_por~., b_por_bin, model = "multinom", Runs=20, method=K)
+lm_cpb = mining(pass_por~., c_por_bin, model = "multinom", Runs=20, method=K)
+print(mean(lm_apb$error))
+print(mean(lm_bpb$error))
+print(mean(lm_cpb$error))
+```
+
+```{r}
+qda_apb = mining(pass_por~., a_por_bin, model = "qda", Runs=20, method=K)
+qda_bpb = mining(pass_por~., b_por_bin, model = "qda", Runs=20, method=K)
+qda_cpb = mining(pass_por~., c_por_bin, model = "qda", Runs=20, method=K)
+print(mean(qda_apb$error))
+print(mean(qda_bpb$error))
+print(mean(qda_cpb$error))
+```
+
+```{r}
+NB_apb = mining(pass_por~., a_por_bin, model = "naiveBayes", Runs=20, method=K)
+NB_bpb = mining(pass_por~., b_por_bin, model = "naiveBayes", Runs=20, method=K)
+NB_cpb = mining(pass_por~., c_por_bin, model = "naiveBayes", Runs=20, method=K)
+print(mean(NB_apb$error))
+print(mean(NB_bpb$error))
+print(mean(NB_cpb$error))
+```
+
+
+## Save Models
+```{r save models}
+model_dir = "../Models/Portuguese/Binary"
+# save all models
+savemodel(lda_apb, paste(model_dir, "/lda_apb.model", sep = ""))
+savemodel(lda_bpb, paste(model_dir, "/lda_bpb.model", sep = ""))
+savemodel(lda_cpb, paste(model_dir, "/lda_cpb.model", sep = ""))
+savemodel(lm_apb, paste(model_dir, "/lm_apb.model", sep = ""))
+savemodel(lm_bpb, paste(model_dir, "/lm_bpb.model", sep = ""))
+savemodel(lm_cpb, paste(model_dir, "/lm_cpb.model", sep = ""))
+savemodel(NB_apb, paste(model_dir, "/NB_apb.model", sep = ""))
+savemodel(NB_bpb, paste(model_dir, "/NB_bpb.model", sep = ""))
+savemodel(NB_cpb, paste(model_dir, "/NB_cpb.model", sep = ""))
+```

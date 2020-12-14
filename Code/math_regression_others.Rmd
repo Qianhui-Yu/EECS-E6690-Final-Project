@@ -1,0 +1,44 @@
+---
+title: "math_regression"
+author: "Zihao Xiong"
+date: "12/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Regression for Math
+
+```{r regression for Math}
+# load data
+# math_full = read.csv2(file = "../data/math-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_math_reg = subset(math_full, select = -c(school, five_math, pass_math)) 
+b_math_reg = subset(math_full, select = -c(school, G2, five_math, pass_math)) 
+c_math_reg = subset(math_full, select = -c(school, G1, G2, five_math, pass_math)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+```
+
+```{r}
+lm_amr = mining(G3~., a_math_reg, model = "lm", Runs=20, method=K)
+lm_bmr = mining(G3~., b_math_reg, model = "lm", Runs=20, method=K)
+lm_cmr = mining(G3~., c_math_reg, model = "lm", Runs=20, method=K)
+print(mean(lm_amr$error))
+print(mean(lm_bmr$error))
+print(mean(lm_cmr$error))
+```
+
+
+## Save Models
+```{r save models}
+model_dir = "../Models/Math/Regression"
+# save all models
+savemodel(lm_amr, paste(model_dir, "/lm_amr.model", sep = ""))
+savemodel(lm_bmr, paste(model_dir, "/lm_bmr.model", sep = ""))
+savemodel(lm_cmr, paste(model_dir, "/lm_cmr.model", sep = ""))
+```

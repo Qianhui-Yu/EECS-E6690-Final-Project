@@ -1,0 +1,78 @@
+---
+title: "Portuguese_five_level_classification"
+author: "Zihao Xiong"
+date: "12/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Five-level Classification for Portuguese
+
+```{r five-level classification for Portuguese}
+# load data
+por_full = read.csv2(file = "../data/por-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_por_five = subset(por_full, select = -c(school, G3, pass_por)) 
+b_por_five = subset(por_full, select = -c(school, G2, G3, pass_por)) 
+c_por_five = subset(por_full, select = -c(school, G1, G2, G3, pass_por)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+```
+
+
+```{r}
+lda_apf = mining(five_por~., a_por_five, model = "lda", Runs=20, method=K)
+lda_bpf = mining(five_por~., b_por_five, model = "lda", Runs=20, method=K)
+lda_cpf = mining(five_por~., c_por_five, model = "lda", Runs=20, method=K)
+print(mean(lda_apf$error))
+print(mean(lda_bpf$error))
+print(mean(lda_cpf$error))
+```
+
+```{r}
+lm_apf = mining(five_por~., a_por_five, model = "multinom", Runs=20, method=K)
+lm_bpf = mining(five_por~., b_por_five, model = "multinom", Runs=20, method=K)
+lm_cpf = mining(five_por~., c_por_five, model = "multinom", Runs=20, method=K)
+print(mean(lm_apf$error))
+print(mean(lm_bpf$error))
+print(mean(lm_cpf$error))
+```
+
+```{r}
+qda_apf = mining(five_por~., a_por_five, model = "qda", Runs=20, method=K)
+qda_bpf = mining(five_por~., b_por_five, model = "qda", Runs=20, method=K)
+qda_cpf = mining(five_por~., c_por_five, model = "qda", Runs=20, method=K)
+print(mean(qda_apf$error))
+print(mean(qda_bpf$error))
+print(mean(qda_cpf$error))
+```
+
+```{r}
+NB_apf = mining(five_por~., a_por_five, model = "naiveBayes", Runs=20, method=K)
+NB_bpf = mining(five_por~., b_por_five, model = "naiveBayes", Runs=20, method=K)
+NB_cpf = mining(five_por~., c_por_five, model = "naiveBayes", Runs=20, method=K)
+print(mean(NB_apf$error))
+print(mean(NB_bpf$error))
+print(mean(NB_cpf$error))
+```
+
+
+## Save Models
+```{r save models}
+model_dir = "../Models/Portuguese/Five"
+# save all models
+savemodel(lda_apf, paste(model_dir, "/lda_apf.model", sep = ""))
+savemodel(lda_bpf, paste(model_dir, "/lda_bpf.model", sep = ""))
+savemodel(lda_cpf, paste(model_dir, "/lda_cpf.model", sep = ""))
+savemodel(lm_apf, paste(model_dir, "/lm_apf.model", sep = ""))
+savemodel(lm_bpf, paste(model_dir, "/lm_bpf.model", sep = ""))
+savemodel(lm_cpf, paste(model_dir, "/lm_cpf.model", sep = ""))
+savemodel(NB_apf, paste(model_dir, "/NB_apf.model", sep = ""))
+savemodel(NB_bpf, paste(model_dir, "/NB_bpf.model", sep = ""))
+savemodel(NB_cpf, paste(model_dir, "/NB_cpf.model", sep = ""))
+```

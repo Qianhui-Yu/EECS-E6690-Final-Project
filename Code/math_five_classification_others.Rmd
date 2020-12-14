@@ -1,0 +1,73 @@
+---
+title: "five_level_classification"
+author: "Zihao Xiong"
+date: "12/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Five-level Classification for Math
+
+```{r five-level classification for Math}
+# load data
+# math_full = read.csv2(file = "../data/math-full.csv", header = TRUE)
+# Generate 3 different inputs
+a_math_five = subset(math_full, select = -c(school, G3, pass_math)) 
+b_math_five = subset(math_full, select = -c(school, G2, G3, pass_math)) 
+c_math_five = subset(math_full, select = -c(school, G1, G2, G3, pass_math)) 
+library(rminer)
+
+# 10-fold cross validation 
+K = c("kfold", 10)
+```
+
+```{r}
+lda_amf = mining(five_math~., a_math_five, model = "lda", Runs=20, method=K)
+lda_bmf = mining(five_math~., b_math_five, model = "lda", Runs=20, method=K)
+lda_cmf = mining(five_math~., c_math_five, model = "lda", Runs=20, method=K)
+print(mean(lda_amf$error))
+print(mean(lda_bmf$error))
+print(mean(lda_cmf$error))
+
+lm_amf = mining(five_math~., a_math_five, model = "multinom", Runs=20, method=K)
+lm_bmf = mining(five_math~., b_math_five, model = "multinom", Runs=20, method=K)
+lm_cmf = mining(five_math~., c_math_five, model = "multinom", Runs=20, method=K)
+print(mean(lm_amf$error))
+print(mean(lm_bmf$error))
+print(mean(lm_cmf$error))
+
+qda_amf = mining(five_math~., a_math_five, model = "qda", Runs=20, method=K)
+qda_bmf = mining(five_math~., b_math_five, model = "qda", Runs=20, method=K)
+qda_cmf = mining(five_math~., c_math_five, model = "qda", Runs=20, method=K)
+print(mean(qda_amf$error))
+print(mean(qda_bmf$error))
+print(mean(qda_cmf$error))
+
+NB_amf = mining(five_math~., a_math_five, model = "naiveBayes", Runs=20, method=K)
+NB_bmf = mining(five_math~., b_math_five, model = "naiveBayes", Runs=20, method=K)
+NB_cmf = mining(five_math~., c_math_five, model = "naiveBayes", Runs=20, method=K)
+print(mean(NB_amf$error))
+print(mean(NB_bmf$error))
+print(mean(NB_cmf$error))
+```
+
+## Save Models
+```{r save models}
+model_dir = "../Models/Math/Five"
+# save all models
+savemodel(lda_amf, paste(model_dir, "/lda_amf.model", sep = ""))
+savemodel(lda_bmf, paste(model_dir, "/lda_bmf.model", sep = ""))
+savemodel(lda_cmf, paste(model_dir, "/lda_cmf.model", sep = ""))
+savemodel(lm_amf, paste(model_dir, "/lm_amf.model", sep = ""))
+savemodel(lm_bmf, paste(model_dir, "/lm_bmf.model", sep = ""))
+savemodel(lm_cmf, paste(model_dir, "/lm_cmf.model", sep = ""))
+savemodel(qda_amf, paste(model_dir, "/qda_amf.model", sep = ""))
+savemodel(qda_bmf, paste(model_dir, "/qda_bmf.model", sep = ""))
+savemodel(qda_cmf, paste(model_dir, "/qda_cmf.model", sep = ""))
+savemodel(NB_amf, paste(model_dir, "/NB_amf.model", sep = ""))
+savemodel(NB_bmf, paste(model_dir, "/NB_bmf.model", sep = ""))
+savemodel(NB_cmf, paste(model_dir, "/NB_cmf.model", sep = ""))
+```
